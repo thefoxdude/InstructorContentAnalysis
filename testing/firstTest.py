@@ -46,12 +46,14 @@ with open(file, 'r') as instructorContent:
         
     print("Please enter the total number of zyBooks")
     total_zyBooks = int(input())
-    print("%d has the most notes at %d" % (zyBook_with_most_notes, most_notes))
-    print("There are %d zyBooks with notes" % notated_zyBooks)
+    
+    print("%d has the most notes at %d." % (zyBook_with_most_notes, most_notes))
+    print("There are %d zyBooks with notes." % notated_zyBooks)
+    print("There are a total of %d notes." % total_notes)
     average_note_per_zyBook = total_notes / notated_zyBooks
-    print("There are %d notes per zyBook on average" % average_note_per_zyBook)
+    print("There are %d notes per zyBook on average." % average_note_per_zyBook)
     percent_of_zyBooks_with_notes = (notated_zyBooks / total_zyBooks) * 100
-    print("%d out of %d zyBooks use teacher notes. That is %d%%" % (notated_zyBooks, total_zyBooks, percent_of_zyBooks_with_notes))
+    print("%d out of %d zyBooks use teacher notes.  That is %d%%." % (notated_zyBooks, total_zyBooks, percent_of_zyBooks_with_notes))
     
         
         
