@@ -5,6 +5,7 @@ Created on Jun 12, 2015
 '''
 import csv
 import sys
+import re
 from collections import defaultdict
 
 zyBooks = {}
@@ -17,6 +18,7 @@ zyBook_public_location = 18
 line = 1
 
 file = sys.argv[2]
+stop_words_file = sys.argv[3]
 
 with open(file, 'r') as instructorContent:
     fileReader = csv.reader(instructorContent, delimiter=',')
@@ -79,36 +81,45 @@ with open(file, 'r') as instructorContent:
                     character_distribution[key] += 1
                     break
     
-      
+    stop_words = []
+    with open(stop_words_file, 'r') as stopWords:
+        fileReader = csv.reader(stopWords, delimiter=',')
+        for row in fileReader:
+            for x in row:
+                stop_words.append(x)
+    
     word_count = defaultdict(int)
-    all_notes = all_notes.split()
+    all_notes = re.split(r'[\s.():/]', all_notes)
+    all_notes = [element.lower() for element in all_notes]
     for word in all_notes:
-        if len(word) > 3:
+        if (len(word) > 1 and word not in stop_words):
             word_count[word] += 1
-    for key in word_count.keys():
-        if word_count[key] > 50:
-            print(key + ": %d" % word_count[key])
+    word_count = sorted(word_count.items(), key=lambda x: x[1], reverse=False)
+    for item in word_count:
+        if item[1] >= 50:
+            print(item)
+    
             
     total_zyBooks = int(sys.argv[1])
     
-#     print("'%s' (%s) has the most instructor notes at %d." % (zyBook_title_with_most_notes, zyBook_code_with_most_notes, most_notes))
-#     print("There are %d zyBooks with instructor notes." % notated_zyBooks)
-#     print("Of those %d notated zyBooks %d of them are public" % (notated_zyBooks, number_of_public_zyBooks))
-#     print("There are a total of %d instructor notes." % total_notes)
-#     average_size_of_notes = length_of_instructor_notes / total_notes
-#     print("Each instructor note is, on average, %d characters long." % average_size_of_notes)
-#     average_notes_per_zyBook = total_notes / notated_zyBooks
-#     average_notes_per_all = total_notes / total_zyBooks
-#     print("There are %d instructor notes on average per zyBooks that have instructor notes." % average_notes_per_zyBook)
-#     print("There are %.2f instructor notes per all zyBooks on average." % average_notes_per_all)
+    print("'%s' (%s) has the most instructor notes at %d." % (zyBook_title_with_most_notes, zyBook_code_with_most_notes, most_notes))
+    print("There are %d zyBooks with instructor notes." % notated_zyBooks)
+    print("Of those %d notated zyBooks %d of them are public" % (notated_zyBooks, number_of_public_zyBooks))
+    print("There are a total of %d instructor notes." % total_notes)
+    average_size_of_notes = length_of_instructor_notes / total_notes
+    print("Each instructor note is, on average, %d characters long." % average_size_of_notes)
+    average_notes_per_zyBook = total_notes / notated_zyBooks
+    average_notes_per_all = total_notes / total_zyBooks
+    print("There are %d instructor notes on average per zyBooks that have instructor notes." % average_notes_per_zyBook)
+    print("There are %.2f instructor notes per all zyBooks on average." % average_notes_per_all)
     for key in character_distribution_keys:
         average = (character_distribution[key] / total_notes) * 100
         if key != character_distribution_keys[-1]:
             print("%.2f%% of the instructor notes are less than %d." % (average, key))
         else:
             print("%.2f%% of the instructor notes are greater than %d." % (average, character_distribution_keys[-2]))
-#     percent_of_zyBooks_with_notes = (notated_zyBooks / total_zyBooks) * 100
-#     print("%d out of %d zyBooks use instructor notes.  That is %d%%." % (notated_zyBooks, total_zyBooks, percent_of_zyBooks_with_notes))
+    percent_of_zyBooks_with_notes = (notated_zyBooks / total_zyBooks) * 100
+    print("%d out of %d zyBooks use instructor notes.  That is %d%%." % (notated_zyBooks, total_zyBooks, percent_of_zyBooks_with_notes))
     
         
         

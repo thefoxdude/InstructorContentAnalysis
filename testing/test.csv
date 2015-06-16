@@ -1,0 +1,30 @@
+instructor_content_id,zybook_content_section_id,date_added,content,zybook_id,canonical_section_id,zybook_id,title,zybook_code,price,snippet,summary,begin_date,end_date,featured,email_extension,student_id_required,homework_system_enabled,zyde_enabled,public,development,creation_date,additional_instructions,autosubscribe,institution_id,feature1,feature2,feature3,feature4,feature5,cache_dirty,about_page_canonical_section_id,feature6,feature7,feature8,feature9,feature10,course_id
+3,4774,12/22/2014 17:52,"You will see below a string member function called length(), which has an alias size()
+In this class, I want you to exclusively use the **size()** version, not length()
+
+Also, the text says that the string member function find returns -1 when the target is not found: *this is only partly true!* 
+It returns a special number called npos, which can be cast to the integer -1. 
+The **ONLY** correct way to test whether find has (or has not) found its target in a string is to compare the return value to this special value npos (to tell the compiler where to find the definition of npos, you have to write `string::npos`):
+```
+if (word.find(target) != string::npos) {...} //if target WAS found
+if (word.find(target) == string::npos ) {...} //if target was NOT found
+```",2,786,2,CS10: Intro to Programming,CS10Summer2014,3500,Summer School 2014,,4/23/2014 18:25,9/23/2014 18:25,0,NULL,0,1,1,1,0,8/4/2014 18:37,"Note: This zyBook has add-ons using Zyante's remotely-hosted code development environment (zyde) for coding practice activities and for auto-graded homework activities. The add-ons have additional cost, but are provided this semester as a free trial.",0,NULL,1,0,1,0,0,1,108262,0,0,0,0,0,374
+4,7823,12/22/2014 17:52,See Kirby 1C - Algorithms,40,53715,40,NKU INF 120: Programming in Python 2.7,NKUINF120Fall2014Python2,3500,,,4/23/2014 18:25,12/23/2014 18:25,0,nku.edu,0,1,1,1,0,8/4/2014 18:37,"Note: This zyBook has add-ons using Zyante's remotely-hosted code development environment (zyde) for coding practice activities and for auto-graded homework activities. The add-ons have additional cost, but are provided this semester as a free trial.",0,NULL,1,0,0,0,1,0,108267,0,0,0,0,0,519
+5,202,12/22/2014 17:52,"A vector is an \array with built-in functions & protection\""  very similar to a string  which is in effect a vector of chars. We will not be using \""raw\"" arrays in this course  only vectors.""",2,804,2,CS10: Intro to Programming,CS10Summer2014,3500,Summer School 2014,,4/23/2014 18:25,9/23/2014 18:25,0,NULL,0,1,1,1,0,8/4/2014 18:37,"Note: This zyBook has add-ons using Zyante's remotely-hosted code development environment (zyde) for coding practice activities and for auto-graded homework activities. The add-ons have additional cost, but are provided this semester as a free trial.",0,NULL,1,0,1,0,0,1,108262,0,0,0,0,0,374
+6,209,12/22/2014 17:52,"
+To simplify things for you, I have told you to ALWAYS use reference parameters for ALL vectors & strings;
+the text is more nuanced (correctly), and says that for vectors & strings known to be small, you should use value parameters.
+
+While this is correct, you may ignore it, and continue to use ONLY reference parameters for ALL vectors & strings.
+You still must understand when to use the const modifier with reference parameters.",2,833,2,CS10: Intro to Programming,CS10Summer2014,3500,Summer School 2014,,4/23/2014 18:25,9/23/2014 18:25,0,NULL,0,1,1,1,0,8/4/2014 18:37,"Note: This zyBook has add-ons using Zyante's remotely-hosted code development environment (zyde) for coding practice activities and for auto-graded homework activities. The add-ons have additional cost, but are provided this semester as a free trial.",0,NULL,1,0,1,0,0,1,108262,0,0,0,0,0,374
+7,5209,12/22/2014 17:52,"For ARC 35 students: Instructors will provide deadlines for completing each section's activities.
+
+Week 1- Week 6: Assignments due Sunday at 11pm
+
+Week 7: Assignments due Friday September 12th at 8am  
+
+Week 1: 1.1-1.8 
+",27,15922,27,UCR ARC 35 Algebra Summer 2014,UCRARC35AlgebraSummer2014,0,,"Provides interactive learning material for UCR's ARC 35 algebra workshop.
+
+Includes some links to relevant video/tools from Khan Academy. All Khan Academy content is available for free at www.khanacademy.org.",4/23/2014 18:25,9/23/2014 18:25,0,NULL,0,0,0,1,0,8/4/2014 18:37,Regular price is $38. Cost is included with enrollment in UCR ARC 35. ,0,NULL,1,1,0,0,1,0,108270,0,0,0,0,0,371
+11,16124,12/22/2014 17:52,I suggest making a hard copy of table 1.4.4 since we'll be using these relationships quite a bit,65,2067,65,UCI ICS 6B: Discrete Mathematics,UCIICS6BDiscreteMathematicsSummer2014,3500,,End-of-section exercises are available at: http://goo.gl/OJbLdh. More are being added; instructors willing to contribute exercises can contact susan.lysecky@zyante.com. Coming-year plans include adding some auto-generated auto-graded exercises too.,7/28/2014 23:35,9/30/2014 22:00,0,NULL,0,0,1,1,0,8/4/2014 18:37,NULL,0,NULL,1,0,0,0,1,0,108271,0,0,0,0,0,365
