@@ -10,6 +10,7 @@ from collections import defaultdict
 import datetime
 import plotly.plotly as py
 from plotly.graph_objs import *
+from lib2to3.fixer_util import Newline
 
 def main(total_zyBooks, file, stop_words_file):
     zyBooks = read_file(file)
@@ -54,12 +55,16 @@ def main(total_zyBooks, file, stop_words_file):
         note_date_distribution[zyBooks[book]['title']] = sorted(zyBooks[book]['note dates'])
     x_locations = []
     y_locations = []
+    num_elements = 0
     date_distributions = compute_date_difference(note_date_distribution)
+    date_distributions = sorted(date_distributions, key=lambda x: x[1], reverse=True)
     for book, time in date_distributions:
         if time > 0:
             x_locations.append(book)
             y_locations.append(time)
-    graph(x_locations, y_locations, 'date distribution', 'books', 'days between first and last note')
+            num_elements += 1
+    graph_line(x_locations, y_locations, 'date distribution', 'books', 'days between first and last note')
+    print_to_excel(x_locations, y_locations, num_elements, 'date_distribution.csv')
     
     stop_words = add_stop_words(stop_words_file)
     
@@ -75,11 +80,14 @@ def main(total_zyBooks, file, stop_words_file):
     print_to_file(words_to_print)
     x_locations = []
     y_locations = []
+    num_elements = 0
     for item in word_count:
         if item[1] > 20:
             x_locations.append(item[0])
             y_locations.append(item[1])
-    graph(x_locations, y_locations, 'most used words', 'words', 'times used')
+            num_elements += 1
+    graph_line(x_locations, y_locations, 'most used words', 'words', 'times used')
+    print_to_excel(x_locations, y_locations, num_elements, 'most_used_words.csv')
      
     average_size_of_notes = length_of_instructor_notes / total_notes
     average_notes_per_zyBook = total_notes / notated_zyBooks
@@ -90,10 +98,13 @@ def main(total_zyBooks, file, stop_words_file):
         books[zyBooks[book]['title']] = len(zyBooks[book]['instructor_content'])
     x_locations = []
     y_locations = []
+    num_elements = 0
     for title in books.keys():
         x_locations.append(title)
         y_locations.append(books[title])
-    graph(x_locations, y_locations, 'notes and books', 'books', 'number of notes')
+        num_elements += 1
+    graph_bar(x_locations, y_locations, 'notes and books', 'books', 'number of notes')
+    print_to_excel(x_locations, y_locations, num_elements, 'notes_and_books.csv')
     
     most_notes = {
                   'title': zyBook_title_with_most_notes,
@@ -125,6 +136,34 @@ def main(total_zyBooks, file, stop_words_file):
             'characters': characters,
             'note dates': note_date_distribution
             }
+    
+    x_locations = []
+    y_locations = []
+    num_elements = 0
+    for key in data['characters']['keys']:
+        average = (data['characters']['distribution'][key] / data['total notes']) * 100
+        x_locations.append(key)
+        percent = str(average) + '%'
+        y_locations.append(percent)
+        num_elements += 1
+#     graph_line(x_locations, y_locations, 'note sizes', 'size of note', 'percent between numbers')
+    print_to_excel(x_locations, y_locations, num_elements, 'character_distribution.csv')
+    
+    x_locations = []
+    y_locations = []
+    note_count = []
+    for book in zyBooks:
+        note_count.append(zyBooks[book]['number of notes'])
+    note_count = sorted(note_count, key=lambda x: x[1], reverse=True)
+    num_elements = 0
+    for book, number in note_count:
+        x_locations.append(book)
+        y_locations.append(number)
+        num_elements += 1
+    print_to_excel(x_locations, y_locations, num_elements, 'books_note_counts.csv')
+        
+        
+    
     return data
     
 def print_all(data):
@@ -190,6 +229,7 @@ def read_file(file):
                 try:
                     zyBooks[zyBook_id]['instructor_content'].append(instructor_note)
                     zyBooks[zyBook_id]['note dates'].append(note_addition_date)
+                    zyBooks[zyBook_id]['number of notes'][1] += 1
                 except KeyError:
                     zyBooks[zyBook_id] = {
                                           'id': zyBook_id,
@@ -197,7 +237,8 @@ def read_file(file):
                                           'title': zyBook_title,
                                           'code': zyBook_code,
                                           'public': zyBook_public,
-                                          'note dates': [note_addition_date]
+                                          'note dates': [note_addition_date],
+                                          'number of notes': [zyBook_title, 1]
                                           }
     return zyBooks
 
@@ -230,7 +271,7 @@ def compute_date_difference(dictionary):
         differences.append(times)
     return differences
 
-def graph(x_locations, y_locations, name_of_graph, x_axis, y_axis):
+def graph_line(x_locations, y_locations, name_of_graph, x_axis, y_axis):
     line1 = Scatter(
         x = x_locations,
         y = y_locations
@@ -256,15 +297,51 @@ def graph(x_locations, y_locations, name_of_graph, x_axis, y_axis):
         )
     )
     fig = Figure(data=data, layout=layout)
-    py.plot(fig, filename = name_of_graph)
+#     py.plot(fig, filename = name_of_graph)
+    
+def graph_bar(x_locations, y_locations, name_of_graph, x_axis, y_axis):
+    bar1 = Bar(
+               x = x_locations,
+               y = y_locations
+               )
+ 
+    data = Data([bar1])
+     
+    layout = Layout(
+        title = name_of_graph,
+        xaxis=XAxis(
+            title = x_axis,
+            titlefont=Font(
+                family='Courier New, monospace',
+                color='#7f7f7f'
+            )
+        ),
+        yaxis = YAxis(
+            title = y_axis,
+            titlefont=Font(
+                family='Courier New, monospace',
+                color='#7f7f7f'
+            )
+        )
+    )
+    fig = Figure(data=data, layout=layout)
+#     py.plot(fig, filename = name_of_graph)
     
 def print_to_file(words):
     with open('allWords.txt', 'w') as w:
         for word in words:
             w.write(word + ' ')
     
+def print_to_excel(x_locations, y_locations, num_elements, file_name):
+    with open(file_name, 'w+', newline = "") as csv_file:
+        csv_writer = csv.writer(csv_file, delimiter = ',')
+        i = 0
+        while i < num_elements:
+            csv_writer.writerow([x_locations[i], y_locations[i]])
+            i += 1
+
 if __name__ == '__main__':
-    print_all(main(int(sys.argv[1]), sys.argv[2], sys.argv[3]))
-#     main(int(sys.argv[1]), sys.argv[2], sys.argv[3])
+#     print_all(main(int(sys.argv[1]), sys.argv[2], sys.argv[3]))
+    main(int(sys.argv[1]), sys.argv[2], sys.argv[3])
     
     
