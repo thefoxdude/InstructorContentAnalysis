@@ -26,9 +26,11 @@ def main(total_zyBooks, file, stop_words_file):
     total_notes = 0
     number_of_public_zyBooks = 0
     length_of_instructor_notes = 0
+    zyBooks_and_notes = {}
     
     for zyBook_id in sorted(zyBooks.keys()):
         number_of_notes = len(zyBooks[zyBook_id]['instructor_content'])
+        zyBooks_and_notes[zyBook_id] = number_of_notes
 #         print('Book %d has %d teacher notes' % (zyBook_id, number_of_notes))
         if number_of_notes >= most_notes:
             most_notes = number_of_notes
@@ -53,18 +55,6 @@ def main(total_zyBooks, file, stop_words_file):
     note_date_distribution = {}
     for book in zyBooks:
         note_date_distribution[zyBooks[book]['title']] = sorted(zyBooks[book]['note dates'])
-    x_locations = []
-    y_locations = []
-    num_elements = 0
-    date_distributions = compute_date_difference(note_date_distribution)
-    date_distributions = sorted(date_distributions, key=lambda x: x[1], reverse=True)
-    for book, time in date_distributions:
-        if time > 0:
-            x_locations.append(book)
-            y_locations.append(time)
-            num_elements += 1
-    graph_line(x_locations, y_locations, 'date distribution', 'books', 'days between first and last note')
-    print_to_excel(x_locations, y_locations, num_elements, 'date_distribution.csv')
     
     stop_words = add_stop_words(stop_words_file)
     
@@ -78,33 +68,15 @@ def main(total_zyBooks, file, stop_words_file):
             words_to_print.append(word)
     word_count = sorted(word_count.items(), key=lambda x: x[1], reverse=True)
     print_to_file(words_to_print)
-    x_locations = []
-    y_locations = []
-    num_elements = 0
-    for item in word_count:
-        if item[1] > 20:
-            x_locations.append(item[0])
-            y_locations.append(item[1])
-            num_elements += 1
-    graph_line(x_locations, y_locations, 'most used words', 'words', 'times used')
-    print_to_excel(x_locations, y_locations, num_elements, 'most_used_words.csv')
      
     average_size_of_notes = length_of_instructor_notes / total_notes
     average_notes_per_zyBook = total_notes / notated_zyBooks
     average_notes_per_all = total_notes / total_zyBooks
     percent_of_zyBooks_with_notes = (notated_zyBooks / total_zyBooks) * 100
+    
     books = {}
     for book in zyBooks:
         books[zyBooks[book]['title']] = len(zyBooks[book]['instructor_content'])
-    x_locations = []
-    y_locations = []
-    num_elements = 0
-    for title in books.keys():
-        x_locations.append(title)
-        y_locations.append(books[title])
-        num_elements += 1
-    graph_bar(x_locations, y_locations, 'notes and books', 'books', 'number of notes')
-    print_to_excel(x_locations, y_locations, num_elements, 'notes_and_books.csv')
     
     most_notes = {
                   'title': zyBook_title_with_most_notes,
@@ -124,6 +96,7 @@ def main(total_zyBooks, file, stop_words_file):
     
     data = {
             'books': books,
+            'note data': zyBooks_and_notes,
             'word count': word_count,
             'most notes': most_notes,
             'notated': notated,
@@ -136,6 +109,40 @@ def main(total_zyBooks, file, stop_words_file):
             'characters': characters,
             'note dates': note_date_distribution
             }
+    
+    x_locations = []
+    y_locations = []
+    num_elements = 0
+    date_distributions = compute_date_difference(note_date_distribution)
+    date_distributions = sorted(date_distributions, key=lambda x: x[1], reverse=True)
+    for book, time in date_distributions:
+        if time > 0:
+            x_locations.append(book)
+            y_locations.append(time)
+            num_elements += 1
+    graph_line(x_locations, y_locations, 'date distribution', 'books', 'days between first and last note')
+    print_to_excel(x_locations, y_locations, num_elements, 'date_distribution.csv')
+    
+    x_locations = []
+    y_locations = []
+    num_elements = 0
+    for item in word_count:
+        if item[1] > 20:
+            x_locations.append(item[0])
+            y_locations.append(item[1])
+            num_elements += 1
+    graph_line(x_locations, y_locations, 'most used words', 'words', 'times used')
+    print_to_excel(x_locations, y_locations, num_elements, 'most_used_words.csv')
+    
+    x_locations = []
+    y_locations = []
+    num_elements = 0
+    for title in books.keys():
+        x_locations.append(title)
+        y_locations.append(books[title])
+        num_elements += 1
+#     graph_bar(x_locations, y_locations, 'notes and books', 'books', 'number of notes')
+    print_to_excel(x_locations, y_locations, num_elements, 'notes_and_books.csv')
     
     x_locations = []
     y_locations = []
@@ -161,8 +168,8 @@ def main(total_zyBooks, file, stop_words_file):
         y_locations.append(number)
         num_elements += 1
     print_to_excel(x_locations, y_locations, num_elements, 'books_note_counts.csv')
-        
-        
+
+#     find_median_average(zyBooks_and_notes)
     
     return data
     
@@ -340,8 +347,39 @@ def print_to_excel(x_locations, y_locations, num_elements, file_name):
             csv_writer.writerow([x_locations[i], y_locations[i]])
             i += 1
 
+def find_median_average(dictionary):
+    median = 0;
+    all_values = []
+    total = 0
+    average = 0
+    for value in dictionary.values():
+        all_values.append(value)
+    all_values = sorted(all_values, reverse = True)
+    print(all_values)
+    if (len(all_values) % 2 == 0):
+        middle = int(len(all_values) / 2)
+        median = int((all_values[middle] + all_values[middle - 1]) / 2)
+    else:
+        middle = int(len(all_values) / 2)
+        median = all_values[middle]
+    print(median)
+    total = 0
+    for element in all_values:
+        total += element
+    average = total / len(all_values)
+    print(average)
+
+    del all_values[0]
+    del all_values[0]
+    total = 0
+    for element in all_values:
+        total += element
+    average = total / len(all_values)
+    print(average)
+        
+
 if __name__ == '__main__':
-#     print_all(main(int(sys.argv[1]), sys.argv[2], sys.argv[3]))
-    main(int(sys.argv[1]), sys.argv[2], sys.argv[3])
+    print_all(main(int(sys.argv[1]), sys.argv[2], sys.argv[3]))
+#     main(int(sys.argv[1]), sys.argv[2], sys.argv[3])
     
     
