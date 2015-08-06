@@ -12,8 +12,9 @@ import plotly.plotly as py
 from plotly.graph_objs import *
 from lib2to3.fixer_util import Newline
 
-def main(total_zyBooks, file, stop_words_file):
+def main(total_zyBooks, file, stop_words_file, live_zyBooks):
     zyBooks = read_file(file)
+    live_zyBooks = int(live_zyBooks)
     
     character_distribution_keys = [10, 20, 50, 100, 150, 200, 'above']
     character_distribution = {}
@@ -27,11 +28,11 @@ def main(total_zyBooks, file, stop_words_file):
     number_of_public_zyBooks = 0
     length_of_instructor_notes = 0
     zyBooks_and_notes = {}
+    public_zyBooks = {}
     
     for zyBook_id in sorted(zyBooks.keys()):
         number_of_notes = len(zyBooks[zyBook_id]['instructor_content'])
         zyBooks_and_notes[zyBook_id] = number_of_notes
-#         print('Book %d has %d teacher notes' % (zyBook_id, number_of_notes))
         if number_of_notes >= most_notes:
             most_notes = number_of_notes
             zyBook_title_with_most_notes = zyBooks[zyBook_id]['title']
@@ -39,6 +40,7 @@ def main(total_zyBooks, file, stop_words_file):
         notated_zyBooks += 1
         total_notes += number_of_notes
         if zyBooks[zyBook_id]['public'] == True:
+            public_zyBooks[zyBook_id] = zyBooks[zyBook_id]
             number_of_public_zyBooks += 1
         for instructor_content in zyBooks[zyBook_id]['instructor_content']:
             all_notes += instructor_content + ' '
@@ -73,6 +75,21 @@ def main(total_zyBooks, file, stop_words_file):
     average_notes_per_zyBook = total_notes / notated_zyBooks
     average_notes_per_all = total_notes / total_zyBooks
     percent_of_zyBooks_with_notes = (notated_zyBooks / total_zyBooks) * 100
+    
+    percent_of_live_zyBooks = 100 * number_of_public_zyBooks / live_zyBooks
+    live_number_of_notes = 0
+    live_all_notes = ""
+    live_zyBooks_and_notes = {}
+    for zyBook_id in public_zyBooks.keys():
+        live_number_of_notes += zyBooks_and_notes[zyBook_id]
+        live_zyBooks_and_notes[zyBook_id] = zyBooks_and_notes[zyBook_id]
+        for instructor_content in public_zyBooks[zyBook_id]['instructor_content']:
+            live_all_notes += instructor_content
+    live_average_instructor_notes = live_number_of_notes/number_of_public_zyBooks
+    find_median_average(live_zyBooks_and_notes)
+    print()
+    print(live_number_of_notes)
+    print(live_average_instructor_notes)
     
     books = {}
     for book in zyBooks:
@@ -109,6 +126,8 @@ def main(total_zyBooks, file, stop_words_file):
             'characters': characters,
             'note dates': note_date_distribution
             }
+    
+    # For printing out to excel
     
     x_locations = []
     y_locations = []
@@ -355,7 +374,6 @@ def find_median_average(dictionary):
     for value in dictionary.values():
         all_values.append(value)
     all_values = sorted(all_values, reverse = True)
-    print(all_values)
     if (len(all_values) % 2 == 0):
         middle = int(len(all_values) / 2)
         median = int((all_values[middle] + all_values[middle - 1]) / 2)
@@ -379,7 +397,7 @@ def find_median_average(dictionary):
         
 
 if __name__ == '__main__':
-    print_all(main(int(sys.argv[1]), sys.argv[2], sys.argv[3]))
-#     main(int(sys.argv[1]), sys.argv[2], sys.argv[3])
+#     print_all(main(int(sys.argv[1]), sys.argv[2], sys.argv[3]), sys.argv[4])
+    main(int(sys.argv[1]), sys.argv[2], sys.argv[3], sys.argv[4])
     
     
